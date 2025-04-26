@@ -1,2 +1,3 @@
 # cmake-build-debug directory
-build/
+/graph-tests
+__pycache__/
