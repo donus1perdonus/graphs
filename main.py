@@ -1,17 +1,18 @@
-from typing import List, Tuple, Set
+from typing import List, Tuple
 
-from utils.graph import Graph, GT
+from utils.graph import Graph, GraphType
 
 from algorithms.BFS import find_weakly_connected_components_bfs, find_connected_components_bfs, get_bfs_spanning_tree
 from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_components_dfs, get_dfs_spanning_tree
 from algorithms.floyd_warshall import floyd_warshall
+from algorithms.bipartite import is_bipartite
 
 """
 1.  Алгоритм: DFS/BFS: поиск компонент связности графа и слабой связности в орграфе.
 """
 def task1(answer_basename: str,
             task_basename: str,
-            type_of_graph: GT,
+            type_of_graph: GraphType,
             number_of_tasks: int
             ):
     def get_components_string(components: List[List[int]], g: Graph) -> str:
@@ -54,7 +55,7 @@ def task1(answer_basename: str,
 """
 def task2(answer_basename: str,
             task_basename: str,
-            type_of_graph: GT,
+            type_of_graph: GraphType,
             number_of_tasks: int
             ):
     def find_bridges_and_articulations(graph: Graph) -> Tuple[List[Tuple[int, int]], List[int]]:
@@ -125,7 +126,7 @@ def task2(answer_basename: str,
 """
 def task3(answer_basename: str,
             task_basename: str,
-            type_of_graph: GT,
+            type_of_graph: GraphType,
             number_of_tasks: int
             ):
     for i in range(1, number_of_tasks + 1):
@@ -151,7 +152,7 @@ d)  радиус, множество центральных вершин.
 """
 def task4(answer_basename: str,
             task_basename: str,
-            type_of_graph: GT,
+            type_of_graph: GraphType,
             number_of_tasks: int
             ):
     def print_graph_analysis(graph: Graph) -> str:
@@ -185,20 +186,62 @@ def task4(answer_basename: str,
             # print('\nAnswer:\n' + file_content)
             print(f'Task{i} is {"Succesfull" if file_content == (result + '\n') else "Wrong"}')
 
+
+"""
+5.  Определить, является ли граф двудольным, вывести состав долей. 
+"""
+def task5(answer_basename: str,
+            task_basename: str,
+            type_of_graph: GraphType,
+            number_of_tasks: int
+            ):
+    def check_bipartite(graph: Graph) -> str:
+        is_bip, parts = is_bipartite(graph)
+        
+        if not is_bip:
+            return "Graph is not bipartite."
+        else:
+            part1, part2 = sorted(parts[0]), sorted(parts[1])
+            output = [
+                "First set:",
+                "\t{" + ", ".join(map(str, part1)) + "},",
+                "Second set:",
+                "\t{" + ", ".join(map(str, part2)) + "}."
+            ]
+            return '\n'.join(output)
+    for i in range(1, number_of_tasks + 1):
+        # Форматируем номер файла с ведущими нулями
+        file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
+        ans_file_name = f"graph-tests\\task5\\{answer_basename}_{file_number}.txt"
+        task_file_name = f"graph-tests\\task5\\{task_basename}_{file_number}.txt"
+        g = Graph(task_file_name, 
+                  type_of_graph)
+        with open(ans_file_name, 'r', encoding='utf-8') as ans_file:
+            file_content = ans_file.read()
+            result = check_bipartite(g)
+            # print('\nOutput:\n' + result)
+            # print('\nAnswer:\n' + file_content)
+            print(f'Task{i} is {"Succesfull" if file_content == (result) else "Wrong"}')
+
+
 if __name__ == '__main__':
     # task1(answer_basename='ans_t1', 
     #         task_basename='matrix_t1',
-    #         type_of_graph = GT.MATRIX_OF_ADJACENCY,
+    #         type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
     #         number_of_tasks=50)
     # task2(answer_basename='ans_t2',
     #         task_basename='list_of_adjacency_t2',
-    #         type_of_graph = GT.LIST_OF_ADJACENCY,
+    #         type_of_graph = GraphType.LIST_OF_ADJACENCY,
     #         number_of_tasks=16)
     # task3(answer_basename='ans_t3',
     #         task_basename='list_of_adjacency_t3',
-    #         type_of_graph = GT.LIST_OF_ADJACENCY,
+    #         type_of_graph = GraphType.LIST_OF_ADJACENCY,
     #         number_of_tasks=1)
-    task4(answer_basename='ans_t4',
-            task_basename='list_of_adjacency_t4',
-            type_of_graph = GT.LIST_OF_ADJACENCY,
-            number_of_tasks=12)
+    # task4(answer_basename='ans_t4',
+    #         task_basename='list_of_adjacency_t4',
+    #         type_of_graph = GraphType.LIST_OF_ADJACENCY,
+    #         number_of_tasks=12)
+    task5(answer_basename='ans_t5',
+            task_basename='matrix_t5',
+            type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
+            number_of_tasks=11)

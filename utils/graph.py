@@ -1,7 +1,7 @@
 from typing import List, Tuple, Union, Dict
 from enum import Enum
 
-class GT(Enum):
+class GraphType(Enum):
     LIST_OF_EDGES = 1
     LIST_OF_ADJACENCY = 2
     MATRIX_OF_ADJACENCY = 3
@@ -22,11 +22,11 @@ class Graph:
             lines = [line.strip() for line in file if line.strip()]
             self._num_vertices = int(lines[0])
             
-            if file_type == GT.LIST_OF_EDGES:  # список рёбер
+            if file_type == GraphType.LIST_OF_EDGES:  # список рёбер
                 self._parse_edge_list(lines[1:])
-            elif file_type == GT.LIST_OF_ADJACENCY:  # списки смежности
+            elif file_type == GraphType.LIST_OF_ADJACENCY:  # списки смежности
                 self._parse_adjacency_list(lines[1:])
-            elif file_type == GT.MATRIX_OF_ADJACENCY:  # матрица смежности
+            elif file_type == GraphType.MATRIX_OF_ADJACENCY:  # матрица смежности
                 self._parse_adjacency_matrix(lines[1:])
             else:
                 raise ValueError("Неверный тип файла. Допустимые значения: 1, 2, 3.")
