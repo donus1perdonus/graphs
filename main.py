@@ -1,65 +1,117 @@
-from typing import List
+from typing import List, Tuple, Set
 
-from utils.graph import Graph, LIST_OF_EDGES, LIST_OF_ADJACENCY, MATRIX_OF_ADJACENCY
+from utils.graph import Graph, GT
 
 from algorithms.BFS import find_weakly_connected_components_bfs, find_connected_components_bfs
 from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_components_dfs
 
 
-# # Пример 1: Загрузка из списка рёбер
-# g_adj_list = Graph("graph-tests\\task1\\list_of_edges_t1_001.txt",
-#                     LIST_OF_EDGES)
-# print("\nСписки смежности:")
-# print("Количество вершин:", g_adj_list.size())
-# print("Рёбра из вершины 1:", g_adj_list.list_of_edges(1))
-# print("Матрица смежности (первые 5 строк):")
-# for row in g_adj_list.adjacency_matrix()[:5]:
-#     print(row[:5])  # выводим урезанную матрицу для наглядности
-
-# # Пример 2: Загрузка из списков смежности
-# g_edges = Graph("graph-tests\\task1\\list_of_adjacency_t1_001.txt", 
-#                 LIST_OF_ADJACENCY)
-# print("\nСписок рёбер:")
-# print(g_edges.list_of_edges())
-# print("Смежные вершины для 2:", g_edges.adjacency_list(2))
-# print("Ориентированный?", g_edges.is_directed())
-
-# # Пример 3: Загрузка из матрицы смежности
-# g_matrix = Graph("graph-tests\\task1\\matrix_t1_001.txt", 
-#                  MATRIX_OF_ADJACENCY)
-# print("Матрица смежности:")
-# print(g_matrix.adjacency_matrix())
-# print("Рёбра графа:", g_matrix.list_of_edges())
-# print("Смежные вершины для 2:", g_matrix.adjacency_list(2))
-# print("Вес ребра (2, 3):", g_matrix.weight(2, 3))
-# print("Ориентированный?", g_matrix.is_directed())
-
 """
 1.  Алгоритм: DFS/BFS: поиск компонент связности графа и слабой связности в орграфе.
 """
 
-def print_components(components: List[List[int]]) -> None:
-    if len(components) == 1:
-        print("Graph is connected")
-    else:
-        print("Graph is not connected")
-    
-    print("\nConnected components:")
-    components_sorted = [sorted(comp) for comp in components]
-    for component in components_sorted:
-        print(component)
 
-g = Graph("graph-tests\\task1\\matrix_t1_001.txt",
-          MATRIX_OF_ADJACENCY)
-components_dfs = find_connected_components_dfs(g)
-components_bfs = find_connected_components_bfs(g)
-print_components(components_dfs)
-print_components(components_bfs)
+def task1(answer_basename: str, task_basename: str, type_of_graph: GT):
+    def get_components_string(components: List[List[int]], g: Graph) -> str:
+        result = []
+        if len(components) == 1:
+            result.append(f"{'Diraph' if g.is_directed() else 'Graph'} is connected")
+        else:
+            result.append(f"{'Diraph' if g.is_directed() else 'Graph'} is not connected")
+        
+        result.append("\nConnected components:")
+        
+        # Сортируем вершины внутри каждой компоненты
+        components_sorted = [sorted(comp) for comp in components]
+        # Сортируем сами компоненты по первому элементу, чтобы одиночные вершины шли первыми
+        components_sorted.sort(key=lambda x: (len(x), x[0]))
+        
+        for component in components_sorted:
+            result.append(str(component))
+        
+        return '\n'.join(result)
 
-# Пример 2: Ориентированный граф (список рёбер)
-g_directed = Graph("graph-tests\\task1\\list_of_edges_t1_001.txt", 
-                   LIST_OF_EDGES)
-week_components_dfs = find_weakly_connected_components_dfs(g_directed)
-week_components_bfs = find_weakly_connected_components_bfs(g_directed)
-print_components(week_components_dfs)
-print_components(week_components_bfs)
+    number_of_tasks = 50
+    for i in range(1, number_of_tasks + 1):
+        # Форматируем номер файла с ведущими нулями
+        file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
+        ans_file_name = f"graph-tests\\task1\\{answer_basename}_{file_number}.txt"
+        task_file_name = f"graph-tests\\task1\\{task_basename}_{file_number}.txt"
+        g = Graph(task_file_name, 
+                  type_of_graph)
+        with open(ans_file_name, 'r', encoding='utf-8') as ans_file:
+            file_content = ans_file.read()
+            components = find_connected_components_bfs(g)
+            result = get_components_string(components, g)
+            # print(file_content)
+            # print(result)
+            print(f'Task{i} is {"Succesfull" if file_content == result else "Wrong"}')
+            
+        
+# task1(answer_basename='ans_t1', task_basename='matrix_t1', type_of_graph = GT.MATRIX_OF_ADJACENCY)
+
+
+def task2(answer_basename: str, task_basename: str, type_of_graph: GT):
+    def find_bridges_and_articulations(graph: Graph) -> Tuple[List[Tuple[int, int]], List[int]]:
+        if graph.is_directed():
+            raise ValueError("Граф должен быть неориентированным")
+        
+        adjacency = {v: [] for v in range(1, graph.size() + 1)}
+        for u in range(1, graph.size() + 1):
+            for v, _ in graph._adjacency_list.get(u, []):
+                adjacency[u].append(v)
+        
+        tin = [0] * (graph.size() + 1)
+        low = [0] * (graph.size() + 1)
+        visited = [False] * (graph.size() + 1)
+        timer = 1
+        bridges = []
+        articulations = set()
+        
+        def dfs(u: int, parent: int = -1):
+            nonlocal timer
+            visited[u] = True
+            tin[u] = low[u] = timer
+            timer += 1
+            children = 0
+            
+            for v in adjacency[u]:
+                if v == parent:
+                    continue
+                if visited[v]:
+                    low[u] = min(low[u], tin[v])
+                else:
+                    dfs(v, u)
+                    low[u] = min(low[u], low[v])
+                    if low[v] > tin[u]:
+                        bridges.append((min(u, v), max(u, v)))  # для упорядочивания
+                    if low[v] >= tin[u] and parent != -1:
+                        articulations.add(u)
+                    children += 1
+            if parent == -1 and children > 1:
+                articulations.add(u)
+        
+        for u in range(1, graph.size() + 1):
+            if not visited[u]:
+                dfs(u)
+        
+        bridges = sorted(list(set(bridges)))  # Убираем дубликаты и сортируем
+        articulations = sorted(list(articulations))
+        return bridges, articulations
+
+    number_of_tasks = 50
+    for i in range(1, 2):
+        # Форматируем номер файла с ведущими нулями
+        file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
+        ans_file_name = f"graph-tests\\task2\\{answer_basename}_{file_number}.txt"
+        task_file_name = f"graph-tests\\task2\\{task_basename}_{file_number}.txt"
+        g = Graph(task_file_name, 
+                  type_of_graph)
+        with open(ans_file_name, 'r', encoding='utf-8') as ans_file:
+            file_content = ans_file.read()
+            result = find_bridges_and_articulations(g)
+            # print(file_content)
+            print(result)
+            print(f'Task{i} is {"Succesfull" if file_content == result else "Wrong"}')
+
+task2(answer_basename='ans_t2', task_basename='matrix_t2', type_of_graph = GT.LIST_OF_ADJACENCY)
