@@ -9,9 +9,11 @@ from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_
 """
 1.  Алгоритм: DFS/BFS: поиск компонент связности графа и слабой связности в орграфе.
 """
-
-
-def task1(answer_basename: str, task_basename: str, type_of_graph: GT):
+def task1(answer_basename: str,
+            task_basename: str,
+            type_of_graph: GT,
+            number_of_tasks: int
+            ):
     def get_components_string(components: List[List[int]], g: Graph) -> str:
         result = []
         if len(components) == 1:
@@ -31,7 +33,6 @@ def task1(answer_basename: str, task_basename: str, type_of_graph: GT):
         
         return '\n'.join(result)
 
-    number_of_tasks = 50
     for i in range(1, number_of_tasks + 1):
         # Форматируем номер файла с ведущими нулями
         file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
@@ -47,11 +48,15 @@ def task1(answer_basename: str, task_basename: str, type_of_graph: GT):
             # print(result)
             print(f'Task{i} is {"Succesfull" if file_content == result else "Wrong"}')
             
-        
-# task1(answer_basename='ans_t1', task_basename='matrix_t1', type_of_graph = GT.MATRIX_OF_ADJACENCY)
 
-
-def task2(answer_basename: str, task_basename: str, type_of_graph: GT):
+"""
+2.  Поиск мостов и шарниров в графе.
+"""
+def task2(answer_basename: str,
+            task_basename: str,
+            type_of_graph: GT,
+            number_of_tasks: int
+            ):
     def find_bridges_and_articulations(graph: Graph) -> Tuple[List[Tuple[int, int]], List[int]]:
         if graph.is_directed():
             raise ValueError("Граф должен быть неориентированным")
@@ -99,8 +104,7 @@ def task2(answer_basename: str, task_basename: str, type_of_graph: GT):
         articulations = sorted(list(articulations))
         return bridges, articulations
 
-    number_of_tasks = 50
-    for i in range(1, 2):
+    for i in range(3, 4):
         # Форматируем номер файла с ведущими нулями
         file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
         ans_file_name = f"graph-tests\\task2\\{answer_basename}_{file_number}.txt"
@@ -109,9 +113,19 @@ def task2(answer_basename: str, task_basename: str, type_of_graph: GT):
                   type_of_graph)
         with open(ans_file_name, 'r', encoding='utf-8') as ans_file:
             file_content = ans_file.read()
-            result = find_bridges_and_articulations(g)
-            # print(file_content)
+            bridges, articulations = find_bridges_and_articulations(g)
+            result = f'Bridges:\n {bridges}\nCut vertices:\n {articulations}\n'
+            print(file_content)
             print(result)
             print(f'Task{i} is {"Succesfull" if file_content == result else "Wrong"}')
 
-task2(answer_basename='ans_t2', task_basename='matrix_t2', type_of_graph = GT.LIST_OF_ADJACENCY)
+
+if __name__ == '__main__':
+    # task1(answer_basename='ans_t1', 
+    #         task_basename='matrix_t1',
+    #         type_of_graph = GT.MATRIX_OF_ADJACENCY,
+    #         number_of_tasks=50)
+    task2(answer_basename='ans_t2',
+            task_basename='list_of_adjacency_t2',
+            type_of_graph = GT.LIST_OF_ADJACENCY,
+            number_of_tasks=16)

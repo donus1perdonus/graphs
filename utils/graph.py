@@ -78,25 +78,23 @@ class Graph:
                         self._adjacency_list[v].append((vertex, weight))
                     else:
                         self._is_directed = True
-    
-    def _parse_adjacency_list(self, lines: List[str]):
-        """Парсинг простого списка смежности (без весов)"""
-        self._adjacency_list = {v: [] for v in range(1, self._num_vertices + 1)}
+
+    def _parse_adjacency_matrix(self, lines: List[str]):
+        """Парсинг графа из матрицы смежности."""
+        self._adjacency_matrix = []
         
-        for i in range(len(lines)):
-            vertex = i + 1
-            if not lines[i].strip():
-                continue
-                
-            neighbors = list(map(int, lines[i].strip().split()))
-            for v in neighbors:
-                if 1 <= v <= self._num_vertices:
-                    self._adjacency_list[vertex].append((v, 1))  # вес по умолчанию 1
-                    if not self._is_directed and v != vertex:
-                        if (vertex, 1) not in self._adjacency_list[v]:
-                            self._adjacency_list[v].append((vertex, 1))
-                else:
-                    print(f"Warning: Invalid vertex {v} in adjacency list for vertex {vertex}")
+        for line in lines:
+            row = list(map(int, line.split()))
+            self._adjacency_matrix.append(row)
+        
+        # Проверяем, ориентированный ли граф
+        for i in range(self._num_vertices):
+            for j in range(self._num_vertices):
+                if self._adjacency_matrix[i][j] != self._adjacency_matrix[j][i]:
+                    self._is_directed = True
+                    break
+            if self._is_directed:
+                break
     
     def size(self) -> int:
         """Возвращает количество вершин в графе."""
