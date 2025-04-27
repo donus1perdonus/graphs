@@ -2,8 +2,8 @@ from typing import List, Tuple, Set
 
 from utils.graph import Graph, GT
 
-from algorithms.BFS import find_weakly_connected_components_bfs, find_connected_components_bfs
-from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_components_dfs
+from algorithms.BFS import find_weakly_connected_components_bfs, find_connected_components_bfs, get_bfs_spanning_tree
+from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_components_dfs, get_dfs_spanning_tree
 
 
 """
@@ -104,7 +104,7 @@ def task2(answer_basename: str,
         articulations = sorted(list(articulations))
         return bridges, articulations
 
-    for i in range(3, 4):
+    for i in range(1, number_of_tasks + 1):
         # Форматируем номер файла с ведущими нулями
         file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
         ans_file_name = f"graph-tests\\task2\\{answer_basename}_{file_number}.txt"
@@ -120,12 +120,37 @@ def task2(answer_basename: str,
             print(f'Task{i} is {"Succesfull" if file_content == result else "Wrong"}')
 
 
+""""
+3.  Построение остовного дерева графа: DFS или BFS.
+"""
+def task3(answer_basename: str,
+            task_basename: str,
+            type_of_graph: GT,
+            number_of_tasks: int
+            ):
+    for i in range(1, number_of_tasks + 1):
+        # Форматируем номер файла с ведущими нулями
+        file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
+        ans_file_name = f"graph-tests\\task3\\{answer_basename}_{file_number}.txt"
+        task_file_name = f"graph-tests\\task3\\{task_basename}_{file_number}.txt"
+        g = Graph(task_file_name, 
+                  type_of_graph)
+        with open(ans_file_name, 'r', encoding='utf-8') as ans_file:
+            file_content = ans_file.read()
+            result = get_dfs_spanning_tree(g)
+            print('\nOutput:\n' + result)
+            print('\nAnswer:' + file_content)
+
 if __name__ == '__main__':
     # task1(answer_basename='ans_t1', 
     #         task_basename='matrix_t1',
     #         type_of_graph = GT.MATRIX_OF_ADJACENCY,
     #         number_of_tasks=50)
-    task2(answer_basename='ans_t2',
-            task_basename='list_of_adjacency_t2',
+    # task2(answer_basename='ans_t2',
+    #         task_basename='list_of_adjacency_t2',
+    #         type_of_graph = GT.LIST_OF_ADJACENCY,
+    #         number_of_tasks=16)
+    task3(answer_basename='ans_t3',
+            task_basename='list_of_adjacency_t3',
             type_of_graph = GT.LIST_OF_ADJACENCY,
-            number_of_tasks=16)
+            number_of_tasks=1)
