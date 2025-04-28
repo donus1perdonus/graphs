@@ -266,26 +266,36 @@ def task6(answer_basename: str,
     process_all_mazes(maze_files)
 
 if __name__ == '__main__':
-    # task1(answer_basename='ans_t1', 
-    #         task_basename='matrix_t1',
-    #         type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
-    #         number_of_tasks=50)
-    # task2(answer_basename='ans_t2',
-    #         task_basename='list_of_adjacency_t2',
-    #         type_of_graph = GraphType.LIST_OF_ADJACENCY,
-    #         number_of_tasks=16)
-    # task3(answer_basename='ans_t3',
-    #         task_basename='list_of_adjacency_t3',
-    #         type_of_graph = GraphType.LIST_OF_ADJACENCY,
-    #         number_of_tasks=1)
-    # task4(answer_basename='ans_t4',
-    #         task_basename='list_of_adjacency_t4',
-    #         type_of_graph = GraphType.LIST_OF_ADJACENCY,
-    #         number_of_tasks=12)
-    # task5(answer_basename='ans_t5',
-    #         task_basename='matrix_t5',
-    #         type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
-    #         number_of_tasks=11)
+    # task1(
+    #     answer_basename='ans_t1', 
+    #     task_basename='matrix_t1',
+    #     type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
+    #     number_of_tasks=50
+    # )
+    # task2(
+    #     answer_basename='ans_t2',
+    #     task_basename='list_of_adjacency_t2',
+    #     type_of_graph = GraphType.LIST_OF_ADJACENCY,
+    #     number_of_tasks=16
+    # )
+    # task3(
+    #     answer_basename='ans_t3',
+    #     task_basename='list_of_adjacency_t3',
+    #     type_of_graph = GraphType.LIST_OF_ADJACENCY,
+    #     number_of_tasks=1
+    # )
+    # task4(
+    #     answer_basename='ans_t4',
+    #     task_basename='list_of_adjacency_t4',
+    #     type_of_graph = GraphType.LIST_OF_ADJACENCY,
+    #     number_of_tasks=12
+    # )
+    # task5(
+    #     answer_basename='ans_t5',
+    #     task_basename='matrix_t5',
+    #     type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
+    #     number_of_tasks=11
+    # )
     task6(
         answer_basename='popa',
         task_basename='maze_t6',
