@@ -1,6 +1,8 @@
 from typing import List, Tuple
+import os
 
 from utils.graph import Graph, GraphType
+from utils.map import Map, PathFinder
 
 from algorithms.BFS import find_weakly_connected_components_bfs, find_connected_components_bfs, get_bfs_spanning_tree
 from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_components_dfs, get_dfs_spanning_tree
@@ -116,8 +118,8 @@ def task2(answer_basename: str,
             file_content = ans_file.read()
             bridges, articulations = find_bridges_and_articulations(g)
             result = f'Bridges:\n {bridges}\nCut vertices:\n {articulations}\n'
-            print(file_content)
-            print(result)
+            # print(file_content)
+            # print(result)
             print(f'Task{i} is {"Succesfull" if file_content == result else "Wrong"}')
 
 
@@ -224,6 +226,45 @@ def task5(answer_basename: str,
             print(f'Task{i} is {"Succesfull" if file_content == (result) else "Wrong"}')
 
 
+"""
+6.  Найти проход в лабиринте от начальной точки до конечной.
+"""
+def task6(answer_basename: str,
+            task_basename: str,
+            number_of_tasks: int
+            ):
+    def process_all_mazes(maze_files: List[str]):
+        for maze_file in maze_files:
+            if not os.path.exists(maze_file):
+                print(f"Файл {maze_file} не найден, пропускаем...")
+                continue
+            
+            print(f"\nОбработка лабиринта: {maze_file}")
+            map_obj = Map(maze_file)
+            
+            # Находим все пути между доступными точками
+            all_paths = PathFinder.find_all_paths(map_obj)
+            
+            # Создаем папку для результатов
+            output_dir = "maze_paths"
+            os.makedirs(output_dir, exist_ok=True)
+            
+            # Сохраняем результаты
+            base_name = os.path.splitext(os.path.basename(maze_file))[0]
+            output_file = os.path.join(output_dir, f"{base_name}_paths.txt")
+            
+            with open(output_file, 'w') as f:
+                for (start, goal), path in all_paths.items():
+                    f.write(f"Path from {start} to {goal} (length {len(path)-1}):\n")
+                    f.write(f"Coordinates: {path}\n")
+                    f.write(f"Visualization:\n{PathFinder.visualize_path(map_obj, path)}\n")
+                    f.write("\n" + "="*50 + "\n")
+            
+            print(f"Результаты сохранены в {output_file}")
+
+    maze_files = [f"graph-tests\\task6\\{task_basename}_{i:03}.txt" for i in range(1, number_of_tasks + 1)]
+    process_all_mazes(maze_files)
+
 if __name__ == '__main__':
     # task1(answer_basename='ans_t1', 
     #         task_basename='matrix_t1',
@@ -241,7 +282,12 @@ if __name__ == '__main__':
     #         task_basename='list_of_adjacency_t4',
     #         type_of_graph = GraphType.LIST_OF_ADJACENCY,
     #         number_of_tasks=12)
-    task5(answer_basename='ans_t5',
-            task_basename='matrix_t5',
-            type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
-            number_of_tasks=11)
+    # task5(answer_basename='ans_t5',
+    #         task_basename='matrix_t5',
+    #         type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
+    #         number_of_tasks=11)
+    task6(
+        answer_basename='popa',
+        task_basename='maze_t6',
+        number_of_tasks=1
+    )
