@@ -265,12 +265,35 @@ def task6(answer_basename: str,
     maze_files = [f"graph-tests\\task6\\{task_basename}_{i:03}.txt" for i in range(1, number_of_tasks + 1)]
     process_all_mazes(maze_files)
 
+
+"""
+7.  Определить компоненты сильной связности в орграфе.
+"""
+def task7(answer_basename: str,
+        task_basename: str,
+        type_of_graph: GraphType,
+        number_of_tasks: int
+        ):
+    for i in range(1, number_of_tasks + 1):
+        # Форматируем номер файла с ведущими нулями
+        file_number = f"{i:03}"  # Преобразуем номер в строку с ведущими нулями
+        ans_file_name = f"graph-tests\\task7\\{answer_basename}_{file_number}.txt"
+        task_file_name = f"graph-tests\\task7\\{task_basename}_{file_number}.txt"
+        g = Graph(task_file_name, 
+                  type_of_graph)
+        with open(ans_file_name, 'r', encoding='utf-8') as ans_file:
+            file_content = ans_file.read()
+            # print('\nOutput:\n' + result)
+            # print('\nAnswer:\n' + file_content)
+            print(f'Task{i} is {"Succesfull" if file_content == (result) else "Wrong"}')
+
+
 if __name__ == '__main__':
     # task1(
     #     answer_basename='ans_t1', 
     #     task_basename='matrix_t1',
     #     type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
-    #     number_of_tasks=50
+    #     number_of_tasks=1
     # )
     # task2(
     #     answer_basename='ans_t2',
@@ -296,8 +319,13 @@ if __name__ == '__main__':
     #     type_of_graph = GraphType.MATRIX_OF_ADJACENCY,
     #     number_of_tasks=11
     # )
-    task6(
-        answer_basename='popa',
-        task_basename='maze_t6',
+    # task6(
+    #     answer_basename='puk',
+    #     task_basename='maze_t6',
+    #     number_of_tasks=1
+    # )
+    task7(
+        answer_basename='ans_t7',
+        task_basename='list_of_adjacency_t7',
         number_of_tasks=1
     )

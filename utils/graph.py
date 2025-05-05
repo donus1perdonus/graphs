@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List, Tuple, Union, Dict
 from enum import Enum
 
@@ -32,69 +33,133 @@ class Graph:
                 raise ValueError("Неверный тип файла. Допустимые значения: 1, 2, 3.")
     
     def _parse_edge_list(self, lines: List[str]):
-        """Парсинг графа из списка рёбер."""
-        self._adjacency_list = {v: [] for v in range(1, self._num_vertices + 1)}
-        edge_set = set()  # для проверки дубликатов (если граф неориентированный)
+        """Парсинг списка рёбер с автоматическим определением ориентированности"""
+        self._adjacency_list = defaultdict(list)
+        edge_pairs = set()
         
         for line in lines:
             if not line:
                 continue
-            parts = line.split()
-            if len(parts) == 2:  # если вес не указан, считаем вес = 1
-                u, v = map(int, parts)
-                weight = 1
-            else:
-                u, v, weight = map(int, parts)
+            parts = list(map(int, line.split()))
+            u, v = parts[0], parts[1]
+            self._adjacency_list[u].append(v)
             
-            # Проверяем, не было ли уже такого ребра (для неориентированного графа)
-            if (u, v) not in edge_set and (v, u) not in edge_set:
-                self._adjacency_list[u].append((v, weight))
-                if not self._is_directed and u != v:
-                    self._adjacency_list[v].append((u, weight))
-                edge_set.add((u, v))
+            # Проверяем, есть ли обратное ребро
+            if (v, u) not in edge_pairs:
+                edge_pairs.add((u, v))
             else:
-                # Если ребро уже есть, возможно, это ориентированный граф
-                self._is_directed = True
-                self._adjacency_list[u].append((v, weight))
-    
+                # Если встретили оба направления - граф неориентированный
+                self._is_directed = False
+                return
+        
+        # Если не нашли ни одного обратного ребра - граф ориентированный
+        self._is_directed = True
+
     def _parse_adjacency_list(self, lines: List[str]):
-        """Парсинг графа из списков смежности."""
-        self._adjacency_list = {v: [] for v in range(1, self._num_vertices + 1)}
+        """Парсинг списка смежности с проверкой ориентированности"""
+        self._adjacency_list = defaultdict(list)
+        edge_pairs = set()
         
         for i in range(len(lines)):
-            vertex = i + 1
-            edges = lines[i].split()
-            for edge in edges:
-                if ':' in edge:  # формат "вершина:вес"
-                    v, weight = map(int, edge.split(':'))
-                else:  # если вес не указан, считаем вес = 1
-                    v = int(edge)
-                    weight = 1
-                self._adjacency_list[vertex].append((v, weight))
+            u = i + 1
+            if not lines[i].strip():
+                continue
                 
-                # Проверяем, не ориентированный ли граф
-                if not self._is_directed and v != vertex:
-                    if (v, vertex) not in [(x, w) for x, w in self._adjacency_list[v]]:
-                        self._adjacency_list[v].append((vertex, weight))
-                    else:
-                        self._is_directed = True
+            neighbors = list(map(int, lines[i].strip().split()))
+            for v in neighbors:
+                self._adjacency_list[u].append(v)
+                
+                # Проверка на неориентированность
+                if (v, u) not in edge_pairs:
+                    edge_pairs.add((u, v))
+                else:
+                    self._is_directed = False
+                    return
+        
+        self._is_directed = True
 
     def _parse_adjacency_matrix(self, lines: List[str]):
-        """Парсинг графа из матрицы смежности."""
+        """Парсинг матрицы смежности с определением ориентированности"""
         self._adjacency_matrix = []
+        self._is_directed = False
         
         for line in lines:
-            row = list(map(int, line.split()))
+            if not line.strip():
+                continue
+            row = list(map(int, line.strip().split()))
             self._adjacency_matrix.append(row)
         
-        # Проверяем, ориентированный ли граф
+        # Проверяем симметричность матрицы
         for i in range(self._num_vertices):
             for j in range(self._num_vertices):
                 if self._adjacency_matrix[i][j] != self._adjacency_matrix[j][i]:
                     self._is_directed = True
-                    break
-            if self._is_directed:
-                break
+                    return
+                
+    #   def _parse_edge_list(self, lines: List[str]):
+    #     """Парсинг графа из списка рёбер."""
+    #     self._adjacency_list = {v: [] for v in range(1, self._num_vertices + 1)}
+    #     edge_set = set()  # для проверки дубликатов (если граф неориентированный)
+        
+    #     for line in lines:
+    #         if not line:
+    #             continue
+    #         parts = line.split()
+    #         if len(parts) == 2:  # если вес не указан, считаем вес = 1
+    #             u, v = map(int, parts)
+    #             weight = 1
+    #         else:
+    #             u, v, weight = map(int, parts)
+            
+    #         # Проверяем, не было ли уже такого ребра (для неориентированного графа)
+    #         if (u, v) not in edge_set and (v, u) not in edge_set:
+    #             self._adjacency_list[u].append((v, weight))
+    #             if not self._is_directed and u != v:
+    #                 self._adjacency_list[v].append((u, weight))
+    #             edge_set.add((u, v))
+    #         else:
+    #             # Если ребро уже есть, возможно, это ориентированный граф
+    #             self._is_directed = True
+    #             self._adjacency_list[u].append((v, weight))
+    
+    # def _parse_adjacency_list(self, lines: List[str]):
+    #     """Парсинг графа из списков смежности."""
+    #     self._adjacency_list = {v: [] for v in range(1, self._num_vertices + 1)}
+        
+    #     for i in range(len(lines)):
+    #         vertex = i + 1
+    #         edges = lines[i].split()
+    #         for edge in edges:
+    #             if ':' in edge:  # формат "вершина:вес"
+    #                 v, weight = map(int, edge.split(':'))
+    #             else:  # если вес не указан, считаем вес = 1
+    #                 v = int(edge)
+    #                 weight = 1
+    #             self._adjacency_list[vertex].append((v, weight))
+                
+    #             # Проверяем, не ориентированный ли граф
+    #             if not self._is_directed and v != vertex:
+    #                 if (v, vertex) not in [(x, w) for x, w in self._adjacency_list[v]]:
+    #                     self._adjacency_list[v].append((vertex, weight))
+    #                 else:
+    #                     self._is_directed = True
+
+    # def _parse_adjacency_matrix(self, lines: List[str]):
+    #     """Парсинг графа из матрицы смежности."""
+    #     self._adjacency_matrix = []
+        
+    #     for line in lines:
+    #         row = list(map(int, line.split()))
+    #         self._adjacency_matrix.append(row)
+        
+    #     # Проверяем, ориентированный ли граф
+    #     for i in range(self._num_vertices):
+    #         for j in range(self._num_vertices):
+    #             if self._adjacency_matrix[i][j] != self._adjacency_matrix[j][i]:
+    #                 self._is_directed = True
+    #                 break
+    #         if self._is_directed:
+    #             break
     
     def size(self) -> int:
         """Возвращает количество вершин в графе."""
