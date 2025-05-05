@@ -1,8 +1,8 @@
 from typing import List
 
 from utils.graph import Graph, GraphType
-from algorithms.BFS import find_weakly_connected_components_bfs, find_connected_components_bfs, get_bfs_spanning_tree
-from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_components_dfs, get_dfs_spanning_tree
+from algorithms.BFS import find_weakly_connected_components_bfs, find_connected_components_bfs
+from algorithms.DFS import find_weakly_connected_components_dfs, find_connected_components_dfs
 
 """
 1.  Алгоритм: DFS/BFS: поиск компонент связности графа и слабой связности в орграфе.
