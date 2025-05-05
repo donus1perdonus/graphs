@@ -10,14 +10,11 @@ def task2(answer_basename: str,
             type_of_graph: GraphType,
             number_of_tasks: int
             ):
-    def find_bridges_and_articulations(graph: Graph) -> Tuple[List[Tuple[int, int]], List[int]]:
+    def find_bridges_and_articulations(graph: Graph):
         if graph.is_directed():
             raise ValueError("Граф должен быть неориентированным")
         
-        adjacency = {v: [] for v in range(1, graph.size() + 1)}
-        for u in range(1, graph.size() + 1):
-            for v, _ in graph._adjacency_list.get(u, []):
-                adjacency[u].append(v)
+        adjacency = {u: graph.adjacency_list(u) for u in range(1, graph.size() + 1)}
         
         tin = [0] * (graph.size() + 1)
         low = [0] * (graph.size() + 1)

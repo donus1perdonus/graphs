@@ -1,6 +1,6 @@
 from utils.graph import Graph, GraphType
-from algorithms.DFS import get_dfs_spanning_tree
-from algorithms.BFS import get_bfs_spanning_tree
+from algorithms.DFS import dfs_spanning_tree
+from algorithms.BFS import bfs_spanning_tree
 
 """"
 3.  Построение остовного дерева графа: DFS или BFS.
@@ -19,7 +19,7 @@ def task3(answer_basename: str,
                   type_of_graph)
         with open(ans_file_name, 'r', encoding='utf-8') as ans_file:
             file_content = ans_file.read()
-            result = get_dfs_spanning_tree(g)
+            result = dfs_spanning_tree(g)
             print('\nOutput:\n' + result)
             print('\nAnswer:' + file_content)
 

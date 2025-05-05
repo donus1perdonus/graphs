@@ -50,5 +50,5 @@ if __name__ == '__main__':
         answer_basename='ans_t4',
         task_basename='list_of_adjacency_t4',
         type_of_graph = GraphType.LIST_OF_ADJACENCY,
-        number_of_tasks=12
+        number_of_tasks=14
     )

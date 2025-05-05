@@ -57,18 +57,15 @@ def find_connected_components_dfs(graph: Graph) -> List[List[int]]:
     
     return components
 
-def get_dfs_spanning_tree(graph: Graph) -> str:
-    if graph.is_directed():
-        raise ValueError("Граф должен быть неориентированным")
-    
+def dfs_spanning_tree(graph: Graph):
     visited = set()
     edges = []
     
     def dfs(u):
         visited.add(u)
-        for v in sorted(graph.adjacency_list(u)):  # Сортируем для детерминизма
+        for v in sorted(graph.adjacency_list(u)):  # Используем исправленный метод
             if v not in visited:
-                edges.append((min(u, v), max(u, v)))  # Упорядочиваем ребра
+                edges.append((u, v))
                 dfs(v)
     
     # Начинаем с вершины 1 (как в примере ответа)

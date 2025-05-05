@@ -60,7 +60,7 @@ def find_connected_components_bfs(graph: Graph) -> List[List[int]]:
     
     return components
 
-def get_bfs_spanning_tree(graph: Graph) -> str:
+def bfs_spanning_tree(graph: Graph) -> str:
     if graph.is_directed():
         raise ValueError("Граф должен быть неориентированным")
     

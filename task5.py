@@ -10,13 +10,16 @@ def task5(answer_basename: str,
             number_of_tasks: int
             ):
     def check_bipartite(graph: Graph) -> str:
+        """Форматированный вывод результатов проверки"""
         is_bip, parts = is_bipartite(graph)
         
         if not is_bip:
             return "Graph is not bipartite."
         else:
-            part1, part2 = sorted(parts[0]), sorted(parts[1])
+            part1 = sorted(parts[0])
+            part2 = sorted(parts[1])
             output = [
+                "Graph is bipartite.",
                 "First set:",
                 "\t{" + ", ".join(map(str, part1)) + "},",
                 "Second set:",

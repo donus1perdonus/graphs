@@ -4,18 +4,15 @@ from typing import Tuple, Optional, Set
 from utils.graph import Graph
 
 def is_bipartite(graph: Graph) -> Tuple[bool, Optional[Tuple[Set[int], Set[int]]]]:
-    n = graph.size()
+    """Проверка двудольности для новой структуры Graph"""
+    if graph.is_directed():
+        return False, None  # Алгоритм работает только для неориентированных графов
+    
     color = {}
     bipartition = (set(), set())
+    n = graph.size()
     
-    # Преобразуем матрицу смежности в список смежности (0-based)
-    adj = [[] for _ in range(n)]
-    for i in range(n):
-        for j in range(n):
-            if graph.weight(i+1, j+1) != 0:  # Проверяем наличие ребра
-                adj[i].append(j)
-    
-    for start in range(n):
+    for start in range(1, n + 1):
         if start not in color:
             queue = deque([start])
             color[start] = 0
@@ -23,7 +20,7 @@ def is_bipartite(graph: Graph) -> Tuple[bool, Optional[Tuple[Set[int], Set[int]]
             
             while queue:
                 u = queue.popleft()
-                for v in adj[u]:
+                for v in graph.adjacency_list(u):  # Используем adjacency_list из нового Graph
                     if v not in color:
                         color[v] = 1 - color[u]
                         bipartition[color[v]].add(v)

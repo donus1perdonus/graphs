@@ -7,10 +7,18 @@ def floyd_warshall(graph: Graph) -> Tuple[List[List[int]], List[int], List[int],
     
     # Инициализация матрицы расстояний
     dist = [[sys.maxsize] * n for _ in range(n)]
+    degrees = [0] * n  # Инициализация степеней вершин
+    
     for i in range(n):
         dist[i][i] = 0
-        for j in graph.adjacency_list(i + 1):
+        neighbors = graph.adjacency_list(i + 1)
+        degrees[i] = len(neighbors)  # Считаем степень вершины
+        
+        for j in neighbors:
             dist[i][j - 1] = 1  # Не взвешенный граф (вес = 1)
+            if not graph.is_directed():
+                # Для неориентированного графа добавляем обратное ребро
+                dist[j - 1][i] = 1
     
     # Алгоритм Флойда-Уоршелла
     for k in range(n):
@@ -18,9 +26,6 @@ def floyd_warshall(graph: Graph) -> Tuple[List[List[int]], List[int], List[int],
             for j in range(n):
                 if dist[i][k] + dist[k][j] < dist[i][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
-    
-    # Вычисление степеней вершин
-    degrees = [int(len(graph.adjacency_list(v)) / 2) for v in range(1, n + 1)]
     
     # Вычисление эксцентриситетов
     eccentricity = [max(row) for row in dist]
