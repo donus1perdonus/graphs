@@ -66,6 +66,13 @@
             "request": "launch",
             "program": "${workspaceFolder}/task9.py",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Task10",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/task10.py",
+            "console": "integratedTerminal"
         }
     ]
 }
