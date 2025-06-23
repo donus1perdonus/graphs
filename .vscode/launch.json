@@ -5,81 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Task1",
+            "name": "Пук среньк",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/task1.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task2",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task2.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task3",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task3.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task4",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task4.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task5",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task5.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task6",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task6.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task7",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task7.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task8",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task8.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task9",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task9.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task10",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task10.py",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Task11",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/task11.py",
-            "console": "integratedTerminal"
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}",
+            "justMyCode": false
         }
     ]
 }
