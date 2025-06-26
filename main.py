@@ -48,6 +48,45 @@ def run_task(task_number: int, test_number: Optional[str] = None, algorithm: str
         print(f"Ошибка при выполнении задания {task_number}: {e}")
 
 
+def process_standard_task(task_number: int, test_number: str, task_module, algorithm: str, file_path: str, internal_type: str, test_dir: str, show_result: bool = False):
+    """
+    Общая функция для обработки стандартных заданий (1-5, 7).
+    """
+    print(f"Задание {task_number}, тест {test_number}:")
+    print("=" * 60)
+    print(f"Используется файл: {os.path.basename(file_path)}")
+    try:
+        from utils import Graph
+        graph = Graph(file_path, internal_type)
+        if task_number == 1:
+            result = task_module.solve_task(graph, algorithm)
+        else:
+            result = task_module.solve_task(graph)
+        answer_file = os.path.join(test_dir, f"ans_t{task_number}_{test_number}.txt")
+        passed = False
+        expected = None
+        if os.path.exists(answer_file):
+            with open(answer_file, 'r', encoding='utf-8') as f:
+                expected = f.read().strip()
+            passed = (result.strip() == expected.strip())
+        else:
+            passed = True  # Нет эталона — считаем тест пройденным
+        if passed:
+            print("  ✓ ПРОШЁЛ")
+        else:
+            print("  ✗ НЕ ПРОШЁЛ")
+        if show_result:
+            print("  Получено:")
+            print(result)
+            if expected is not None:
+                print("  Ожидалось:")
+                print(expected)
+        return passed
+    except Exception as e:
+        print(f"Ошибка при выполнении теста: {e}")
+        return False
+
+
 def run_single_test(task_number: int, test_number: str, task_module, algorithm: str = 'dfs', input_type: Optional[str] = None, show_result: bool = False):
     test_dir = f"graph-tests/task{task_number}"
     test_files = {}
@@ -131,33 +170,30 @@ def run_single_test(task_number: int, test_number: str, task_module, algorithm: 
         # Пытаемся найти эталонный ответ
         import glob
         answer_files = sorted(glob.glob(os.path.join(test_dir, f"ans_maze_t6_{test_number}_ans_*.txt")))
-        print(f"[DEBUG] Найдено эталонных файлов: {answer_files}")
-        expected = None
         try:
             result = task_module.solve_task(file_path, start, goal)
             if answer_files:
                 answer_file = answer_files[0]
-                print(f"[DEBUG] Используется эталон: {answer_file}")
+                with open(answer_file, 'r', encoding='utf-8') as f:
+                    expected = f.read().strip()
                 result_lines = result.strip().splitlines()
                 expected_lines = expected.strip().splitlines() if expected is not None else []
                 if result_lines[:3] == expected_lines[:3] if (len(result_lines) > 1 and any('Path:' in line for line in result_lines[:3])) else result_lines[0] == expected_lines[0]:
-                    print(f"  ✓ ПРОШЁЛ")
+                    print("  ✓ ПРОШЁЛ")
                 else:
-                    print(f"  ✗ НЕ ПРОШЁЛ")
+                    print("  ✗ НЕ ПРОШЁЛ")
                 if show_result:
                     if len(result_lines) > 1 and any('Path:' in line for line in result_lines[:3]):
-                        # Маленький лабиринт: выводим length, Path:, путь
-                        print("Получено:")
+                        print("  Получено:")
                         for line in result_lines[:3]:
                             print(line)
-                        print("Ожидалось:")
+                        print("  Ожидалось:")
                         for line in expected_lines[:3]:
                             print(line)
                     else:
-                        # Большой лабиринт: только length of path
-                        print("Получено:")
+                        print("  Получено:")
                         print(result_lines[0])
-                        print("Ожидалось:")
+                        print("  Ожидалось:")
                         if expected_lines:
                             print(expected_lines[0])
             else:
@@ -176,45 +212,9 @@ def run_single_test(task_number: int, test_number: str, task_module, algorithm: 
             file_path, internal_type = list(test_files.values())[0]
     else:
         file_path, internal_type = list(test_files.values())[0]
-    print(f"Задание {task_number}, тест {test_number}:")
-    print("=" * 60)
-    print(f"Используется файл: {os.path.basename(file_path)}")
-    try:
-        from utils import Graph
-        graph = Graph(file_path, internal_type)
-        if task_number == 1:
-            result = task_module.solve_task(graph, algorithm)
-        else:
-            result = task_module.solve_task(graph)
-        answer_file = os.path.join(test_dir, f"ans_t{task_number}_{test_number}.txt")
-        passed = False
-        expected = None
-        if os.path.exists(answer_file):
-            with open(answer_file, 'r', encoding='utf-8') as f:
-                expected = f.read().strip()
-            passed = (result.strip() == expected)
-        else:
-            passed = True  # Нет эталона — считаем тест пройденным
-        if passed:
-            print("  ✓ ПРОШЁЛ")
-        else:
-            print("  ✗ НЕ ПРОШЁЛ")
-        if show_result:
-            # Показываем только те строки, которые используются для сравнения
-            if result.strip().startswith('Length of path') and (len(result.strip().splitlines()) > 1):
-                print("  Получено:")
-                print(f"  {result.strip().splitlines()[0]}")
-                if expected is not None:
-                    print("  Ожидалось:")
-                    print(f"  {expected.strip().splitlines()[0]}")
-            else:
-                print("  Получено:")
-                print("  " + "\n  ".join(result.strip().splitlines()[:3]))
-                if expected is not None:
-                    print("  Ожидалось:")
-                    print("  " + "\n  ".join(expected.strip().splitlines()[:3]))
-    except Exception as e:
-        print(f"Ошибка при выполнении теста: {e}")
+    # Используем общую функцию для стандартных заданий
+    passed = process_standard_task(task_number, test_number, task_module, algorithm, file_path, internal_type, test_dir, show_result)
+    return passed
 
 
 def run_all_tests(task_number: int, task_module, algorithm: str = 'dfs', input_type: Optional[str] = None, show_result: bool = False):
@@ -289,40 +289,10 @@ def run_all_tests(task_number: int, task_module, algorithm: str = 'dfs', input_t
         else:
             file_path, internal_type = list(test_files.values())[0]
         try:
-            from utils import Graph
-            graph = Graph(file_path, internal_type)
-            if task_number == 1:
-                result = task_module.solve_task(graph, algorithm)
-            else:
-                result = task_module.solve_task(graph)
-            answer_file = os.path.join(test_dir, f"ans_t{task_number}_{test_num}.txt")
-            passed = False
-            expected = None
-            if os.path.exists(answer_file):
-                with open(answer_file, 'r', encoding='utf-8') as f:
-                    expected = f.read().strip()
-                passed = (result.strip() == expected)
-            else:
-                passed = True
+            # Используем общую функцию для стандартных заданий
+            passed = process_standard_task(task_number, test_num, task_module, algorithm, file_path, internal_type, test_dir, show_result)
             if passed:
-                print(f"Тест {test_num}: ✓ ПРОШЁЛ")
                 passed_tests += 1
-            else:
-                print(f"Тест {test_num}: ✗ НЕ ПРОШЁЛ")
-            if show_result:
-                # Показываем только те строки, которые используются для сравнения
-                if result.strip().startswith('Length of path') and (len(result.strip().splitlines()) > 1):
-                    print("  Получено:")
-                    print(f"  {result.strip().splitlines()[0]}")
-                    if expected is not None:
-                        print("  Ожидалось:")
-                        print(f"  {expected.strip().splitlines()[0]}")
-                else:
-                    print("  Получено:")
-                    print("  " + "\n  ".join(result.strip().splitlines()[:3]))
-                    if expected is not None:
-                        print("  Ожидалось:")
-                        print("  " + "\n  ".join(expected.strip().splitlines()[:3]))
         except Exception as e:
             print(f"Тест {test_num}: ✗ ОШИБКА: {e}")
     print(f"\nИтого: {passed_tests}/{total_tests} тестов прошли успешно")
