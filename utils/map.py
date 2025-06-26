@@ -27,28 +27,25 @@ class Map:
     def _load_from_file(self, file_path: str):
         """Загружает лабиринт/карту из файла."""
         with open(file_path, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-        
+            lines = [line for line in file if line.strip()]
         if not lines:
             raise ValueError("Файл пуст")
-        
-        # Первая строка содержит размеры
+        # Попробуем считать размеры из первой строки
         try:
             self._rows, self._cols = map(int, lines[0].strip().split())
+            # Старый формат: размеры заданы явно
+            data_lines = lines[1:]
         except ValueError:
-            raise ValueError("Первая строка должна содержать количество строк и столбцов")
-        
-        # Загружаем матрицу
+            # Новый формат: размеры по количеству строк и столбцов
+            self._rows = len(lines)
+            self._cols = len(lines[0].strip().split())
+            data_lines = lines
         self._matrix = []
-        for i, line in enumerate(lines[1:], 1):
-            if i > self._rows:
-                break
-            if line.strip():
-                row = [int(x) for x in line.strip().split()]
-                if len(row) != self._cols:
-                    raise ValueError(f"Количество элементов в строке {i} не соответствует количеству столбцов")
-                self._matrix.append(row)
-        
+        for i, line in enumerate(data_lines):
+            row = [int(x) for x in line.strip().split()]
+            if len(row) != self._cols:
+                raise ValueError(f"Количество элементов в строке {i+1} не соответствует количеству столбцов")
+            self._matrix.append(row)
         if len(self._matrix) != self._rows:
             raise ValueError("Количество строк не соответствует указанному")
     

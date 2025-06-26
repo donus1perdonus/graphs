@@ -89,6 +89,38 @@ def process_standard_task(task_number: int, test_number: str, task_module, algor
         return False
 
 
+def process_task12(test_number: str, task_module, test_dir: str, show_result: bool = False):
+    # Ищем карту и все ответы для неё
+    map_file = os.path.join(test_dir, f"map_{test_number}.txt")
+    answer_files = sorted(glob.glob(os.path.join(test_dir, f"map_{test_number}_ans_*.txt")))
+    if not os.path.exists(map_file) or not answer_files:
+        print(f"Тест {test_number} для задания 12 не найден")
+        return False
+    all_passed = True
+    for answer_file in answer_files:
+        print(f"Тест {test_number} ({os.path.basename(answer_file)}):")
+        print("=" * 60)
+        try:
+            result = task_module.solve_task(map_file, answer_file)
+            with open(answer_file, 'r', encoding='utf-8') as f:
+                expected = f.read().strip()
+            passed = (result.strip() == expected.strip())
+            if passed:
+                print("  ✓ ПРОШЁЛ")
+            else:
+                print("  ✗ НЕ ПРОШЁЛ")
+            if show_result:
+                print("  Получено:")
+                print(result)
+                print("  Ожидалось:")
+                print(expected)
+            all_passed = all_passed and passed
+        except Exception as e:
+            print(f"Ошибка при выполнении теста: {e}")
+            all_passed = False
+    return all_passed
+
+
 def run_single_test(task_number: int, test_number: str, task_module, algorithm: str = 'dfs', input_type: Optional[str] = None, show_result: bool = False):
     test_dir = f"graph-tests/task{task_number}"
     test_files = {}
@@ -221,6 +253,40 @@ def run_single_test(task_number: int, test_number: str, task_module, algorithm: 
 
 def run_all_tests(task_number: int, task_module, algorithm: str = 'dfs', input_type: Optional[str] = None, show_result: bool = False):
     test_dir = f"graph-tests/task{task_number}"
+    if task_number == 12:
+        print(f"Задание {task_number} - все тесты:")
+        print("=" * 60)
+        map_files = sorted([f for f in os.listdir(test_dir) if f.startswith("map_") and f.endswith(".txt") and "_ans_" not in f])
+        total = 0
+        passed = 0
+        for map_file in map_files:
+            test_number = os.path.splitext(map_file)[0].split('_')[1]
+            answer_files = sorted([f for f in os.listdir(test_dir) if f.startswith(f"map_{test_number}_ans_") and f.endswith(".txt")])
+            for answer_file in answer_files:
+                total += 1
+                print(f"Тест {test_number} ({answer_file}):")
+                print("=" * 60)
+                try:
+                    result = task_module.solve_task(
+                        os.path.join(test_dir, map_file),
+                        os.path.join(test_dir, answer_file)
+                    )
+                    with open(os.path.join(test_dir, answer_file), 'r', encoding='utf-8') as f:
+                        expected = f.read().strip()
+                    if result.strip() == expected.strip():
+                        print("  ✓ ПРОШЁЛ")
+                        passed += 1
+                    else:
+                        print("  ✗ НЕ ПРОШЁЛ")
+                    if show_result:
+                        print("  Получено:")
+                        print(result)
+                        print("  Ожидалось:")
+                        print(expected)
+                except Exception as e:
+                    print(f"Ошибка при выполнении теста: {e}")
+        print(f"\nИтого: {passed}/{total} тестов прошли успешно")
+        return
     if not os.path.exists(test_dir):
         print(f"Папка с тестами для задания {task_number} не найдена")
         return
