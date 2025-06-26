@@ -60,6 +60,8 @@ def process_standard_task(task_number: int, test_number: str, task_module, algor
         graph = Graph(file_path, internal_type)
         if task_number == 1:
             result = task_module.solve_task(graph, algorithm)
+        elif task_number == 11:
+            result = task_module.solve_task(graph, test_number)
         else:
             result = task_module.solve_task(graph)
         answer_file = os.path.join(test_dir, f"ans_t{task_number}_{test_number}.txt")
