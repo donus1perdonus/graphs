@@ -1,3 +1,20 @@
+"""
+Задание 1: Поиск компонент связности
+
+Реализует алгоритмы поиска компонент связности для неориентированных графов
+и слабо связных компонент для орграфов.
+
+Алгоритмы:
+- DFS (Depth-First Search) - поиск в глубину
+- BFS (Breadth-First Search) - поиск в ширину
+
+Временная сложность: O(V + E), где V - количество вершин, E - количество рёбер
+Пространственная сложность: O(V)
+
+Автор: [Ваше имя]
+Дата: [Дата создания]
+"""
+
 from typing import List, Set
 from utils import Graph
 from collections import deque
@@ -8,17 +25,27 @@ def find_connected_components_dfs(graph: Graph) -> List[List[int]]:
     """
     Находит компоненты связности графа с использованием итеративного DFS.
     
+    Алгоритм:
+    1. Проходим по всем вершинам графа
+    2. Для каждой непосещённой вершины запускаем DFS
+    3. Все вершины, достижимые из стартовой, образуют компоненту связности
+    
     Args:
         graph: граф для анализа
-        
-    Returns:
-        список компонент связности, где каждая компонента - список номеров вершин
     """
     visited = set()
     components = []
     
     def dfs_iterative(start_vertex: int) -> List[int]:
-        """Итеративный DFS для поиска компоненты связности."""
+        """
+        Итеративный DFS для поиска компоненты связности.
+        
+        Использует стек вместо рекурсии для избежания переполнения стека
+        на больших графах.
+        
+        Args:
+            start_vertex: стартовая вершина для поиска
+        """
         component = []
         stack = [start_vertex]
         visited.add(start_vertex)
@@ -48,17 +75,40 @@ def find_connected_components_bfs(graph: Graph) -> List[List[int]]:
     """
     Находит компоненты связности графа с использованием BFS.
     
+    Алгоритм:
+    1. Проходим по всем вершинам графа
+    2. Для каждой непосещённой вершины запускаем BFS
+    3. Все вершины, достижимые из стартовой, образуют компоненту связности
+    
+    BFS обеспечивает поиск в ширину, что может быть полезно для некоторых задач.
+    
     Args:
         graph: граф для анализа
         
     Returns:
         список компонент связности, где каждая компонента - список номеров вершин
+        
+    Пример:
+        >>> graph = Graph("test.txt", "matrix")
+        >>> components = find_connected_components_bfs(graph)
+        >>> print(components)
+        [[1, 2, 3], [4, 5], [6]]
     """
     visited = set()
     components = []
     
     def bfs(start_vertex: int) -> List[int]:
-        """BFS для поиска компоненты связности."""
+        """
+        BFS для поиска компоненты связности.
+        
+        Использует очередь для обеспечения поиска в ширину.
+        
+        Args:
+            start_vertex: стартовая вершина для поиска
+            
+        Returns:
+            список вершин в компоненте связности
+        """
         component = []
         queue = deque([start_vertex])
         visited.add(start_vertex)
@@ -87,14 +137,26 @@ def find_connected_components_bfs(graph: Graph) -> List[List[int]]:
 def find_weakly_connected_components(graph: Graph) -> List[List[int]]:
     """
     Находит слабо связные компоненты орграфа.
+    
     Слабо связная компонента - это компонента связности неориентированного графа,
     полученного из орграфа удалением ориентации рёбер.
+    
+    Алгоритм:
+    1. Если граф неориентированный, используем обычный поиск компонент связности
+    2. Для орграфа создаём неориентированное представление
+    3. Применяем DFS для поиска компонент связности в неориентированном графе
     
     Args:
         graph: орграф для анализа
         
     Returns:
         список слабо связных компонент
+        
+    Пример:
+        >>> graph = Graph("digraph.txt", "matrix")  # орграф
+        >>> components = find_weakly_connected_components(graph)
+        >>> print(components)
+        [[1, 2, 3], [4, 5]]
     """
     if not graph.is_directed():
         # Если граф неориентированный, используем обычный поиск компонент связности
@@ -106,7 +168,18 @@ def find_weakly_connected_components(graph: Graph) -> List[List[int]]:
     components = []
     
     def dfs_undirected_iterative(vertex: int) -> List[int]:
-        """Итеративный DFS для неориентированного представления орграфа."""
+        """
+        Итеративный DFS для неориентированного представления орграфа.
+        
+        При поиске соседей проверяем рёбра в обе стороны, так как
+        мы работаем с неориентированным представлением орграфа.
+        
+        Args:
+            vertex: текущая вершина
+            
+        Returns:
+            список вершин в слабо связной компоненте
+        """
         component = []
         stack = [vertex]
         visited.add(vertex)
@@ -136,12 +209,28 @@ def solve_task(graph: Graph, algorithm: str = 'dfs') -> str:
     """
     Решает задачу 1: поиск компонент связности.
     
+    Основная функция для решения задачи. Автоматически определяет тип графа
+    (ориентированный или неориентированный) и применяет соответствующий алгоритм.
+    
     Args:
         graph: граф для анализа
-        algorithm: алгоритм ('dfs' или 'bfs')
+        algorithm: алгоритм ('dfs' или 'bfs') - используется только для неориентированных графов
         
     Returns:
-        строка с результатом в требуемом формате
+        строка с результатом в требуемом формате:
+        - "Graph is connected" / "Graph is not connected" для неориентированных графов
+        - "Diraph is connected" / "Diraph is not connected" для орграфов
+        - Список компонент связности
+        
+    Пример вывода:
+        Graph is not connected
+        
+        Connected components:
+        [1, 2, 3, 5]
+        [4, 6]
+        
+    Raises:
+        ValueError: если указан неподдерживаемый алгоритм
     """
     # Автоматически увеличиваем лимит рекурсии для больших графов
     if graph.size() > 1000:
@@ -153,8 +242,10 @@ def solve_task(graph: Graph, algorithm: str = 'dfs') -> str:
     else:
         if algorithm == 'dfs':
             components = find_connected_components_dfs(graph)
-        else:
+        elif algorithm == 'bfs':
             components = find_connected_components_bfs(graph)
+        else:
+            raise ValueError(f"Неподдерживаемый алгоритм: {algorithm}")
     
     # Формируем результат
     result = []

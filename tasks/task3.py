@@ -1,3 +1,21 @@
+"""
+Задание 3: Остовное дерево (Spanning Tree)
+
+Реализует построение остовного дерева с помощью DFS или BFS.
+
+Алгоритмы:
+- DFS (поиск в глубину)
+- BFS (поиск в ширину)
+
+Временная сложность: O(V + E)
+Пространственная сложность: O(V)
+
+Пример вывода:
+    Spanning tree edges:
+    (1, 2)
+    (2, 3)
+    (3, 4)
+"""
 from utils import Graph
 from collections import deque
 import sys
