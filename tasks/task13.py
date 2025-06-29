@@ -63,26 +63,26 @@ def find_maximum_matching(graph) -> Tuple[int, List[Tuple[int, int]]]:
         else:
             right_partition.append(i)
     
-    # Создаем словарь для быстрого поиска
-    left_to_right = {v: i for i, v in enumerate(left_partition)}
-    right_to_left = {v: i for i, v in enumerate(right_partition)}
+    # Сортируем доли для детерминированного результата
+    left_partition.sort()
+    right_partition.sort()
     
-    # Строим список рёбер между долями
-    edges = []
-    for left_vertex in left_partition:
-        for right_vertex in graph.adjacency_list(left_vertex + 1):  # +1 для 1-индексации
-            right_vertex_idx = right_vertex - 1  # Переводим в 0-индексацию
-            if right_vertex_idx in right_to_left:
-                edges.append((left_to_right[left_vertex], right_to_left[right_vertex_idx]))
+    # Строим отображения: номер вершины -> индекс в доле
+    left_index = {v: i for i, v in enumerate(left_partition)}
+    right_index = {v: i for i, v in enumerate(right_partition)}
     
-    # Алгоритм Куна
+    # Строим списки смежности для левой доли (по индексам правой доли)
+    left_adj = [[] for _ in range(len(left_partition))]
+    for i, left_vertex in enumerate(left_partition):
+        neighbors = graph.adjacency_list(left_vertex + 1)
+        for neighbor in neighbors:
+            neighbor_idx = neighbor - 1
+            if neighbor_idx in right_index:
+                left_adj[i].append(right_index[neighbor_idx])
+        left_adj[i].sort()  # Для детерминированности
+    
     left_size = len(left_partition)
     right_size = len(right_partition)
-    
-    # Создаем списки смежности для правой доли
-    right_adj = [[] for _ in range(right_size)]
-    for left_idx, right_idx in edges:
-        right_adj[right_idx].append(left_idx)
     
     # Массив для хранения паросочетания
     match_left = [-1] * left_size  # match_left[i] = j означает, что левая вершина i соединена с правой j
@@ -95,17 +95,7 @@ def find_maximum_matching(graph) -> Tuple[int, List[Tuple[int, int]]]:
         visited[left_vertex] = True
         
         # Ищем все соседние правые вершины
-        for right_vertex in range(right_size):
-            # Проверяем, есть ли ребро между left_vertex и right_vertex
-            has_edge = False
-            for left_idx, right_idx in edges:
-                if left_idx == left_vertex and right_idx == right_vertex:
-                    has_edge = True
-                    break
-            
-            if not has_edge:
-                continue
-            
+        for right_vertex in left_adj[left_vertex]:
             # Если правая вершина не занята или можно найти альтернативный путь
             if match_right[right_vertex] == -1 or dfs(match_right[right_vertex], visited):
                 match_left[left_vertex] = right_vertex
@@ -121,12 +111,12 @@ def find_maximum_matching(graph) -> Tuple[int, List[Tuple[int, int]]]:
         if dfs(left_vertex, visited):
             max_matching += 1
     
-    # Восстанавливаем рёбра паросочетания
+    # Восстанавливаем рёбра паросочетания (используем 0-индексацию)
     matching_edges = []
     for left_vertex in range(left_size):
         if match_left[left_vertex] != -1:
-            left_original = left_partition[left_vertex] + 1  # +1 для 1-индексации
-            right_original = right_partition[match_left[left_vertex]] + 1  # +1 для 1-индексации
+            left_original = left_partition[left_vertex]  # 0-индексация
+            right_original = right_partition[match_left[left_vertex]]  # 0-индексация
             matching_edges.append((left_original, right_original))
     
     # Сортируем рёбра по возрастанию (по первой, затем по второй вершине)

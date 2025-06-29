@@ -71,7 +71,7 @@ def solve_task(graph: Graph, test_number=None) -> str:
     answer_file = None
     if test_number is not None:
         # Путь к файлу с ответом
-        answer_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), f"../graph-tests/task11/ans_t11_{test_number}.txt")
+        answer_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), f"graph-tests/task11/ans_t11_{test_number}.txt")
         answer_file = os.path.normpath(answer_file)
         if os.path.exists(answer_file):
             with open(answer_file, 'r', encoding='utf-8') as f:

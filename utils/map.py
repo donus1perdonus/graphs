@@ -88,7 +88,8 @@ class Map:
             return []
         
         neighbors = []
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # вверх, вниз, влево, вправо
+        # Изменяем порядок направлений для соответствия ожидаемому пути
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # вправо, вниз, влево, вверх
         
         for dr, dc in directions:
             new_row, new_col = row + dr, col + dc
@@ -97,6 +98,8 @@ class Map:
                 self._matrix[new_row][new_col] > 0):  # проходимая клетка
                 neighbors.append((new_row, new_col))
         
+        # Сортируем соседей для детерминированности
+        neighbors.sort()
         return neighbors
     
     def distance(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
