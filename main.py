@@ -6,12 +6,11 @@ import sys
 import os
 import argparse
 import glob
-from typing import Optional, Dict, Tuple, List, Any
-from pathlib import Path
+from typing import Optional, Dict, Tuple, List
 
 # Константы
 MIN_TASK_NUMBER = 1
-MAX_TASK_NUMBER = 20
+MAX_TASK_NUMBER = 15
 DEFAULT_ALGORITHM = 'dfs'
 
 # Типы файлов и их маппинг
